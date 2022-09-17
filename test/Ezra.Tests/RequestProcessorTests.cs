@@ -3,7 +3,7 @@ using NUnit.Framework;
 
 namespace Ezra.Tests;
 
-public class RequestHandlerTests
+public class RequestProcessorTests
 {
     private static Stream CreateStream(params string[] content)
     {

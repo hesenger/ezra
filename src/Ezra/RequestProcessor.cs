@@ -2,9 +2,9 @@ using System.Text;
 
 namespace Ezra;
 
-public class RequestHandler
+public class RequestProcessor
 {
-    public void HandleRequest(Stream content, Stream response)
+    public void Process(Stream content, Stream response)
     {
         using var writer = new StreamWriter(
             stream: response,
