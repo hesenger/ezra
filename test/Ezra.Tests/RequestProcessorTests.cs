@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using Moq;
 using NUnit.Framework;
@@ -80,5 +81,38 @@ public class RequestProcessorTests
         var body = reader.ReadToEnd();
         Assert.That(responseText, Contains.Substring("200 OK"));
         Assert.That(body.Trim(), Is.EqualTo("Hello World"));
+    }
+
+    [Test]
+    public void ShouldCatchErrorFromHandler()
+    {
+        var request = CreateStream($"GET /test HTTP/1.1");
+
+        var response = new MemoryStream();
+        var processor = new RequestProcessor();
+
+        var handlerSpy = new Mock<IRequestHandler>();
+        handlerSpy
+            .Setup(h => h.Handle(It.IsAny<IRequest>(), It.IsAny<IResponse>()))
+            .Callback<IRequest, IResponse>(
+                (request, response) =>
+                    throw new InvalidOperationException("Something went wrong")
+            );
+
+        processor.MapHandler("/test", handlerSpy.Object);
+        processor.Process(request, response);
+
+        handlerSpy.Verify(
+            h => h.Handle(It.IsAny<IRequest>(), It.IsAny<IResponse>()),
+            Times.Once
+        );
+
+        response.Position = 0;
+        var reader = new StreamReader(response);
+        var responseText = reader.ReadLine();
+        Assert.That(
+            responseText,
+            Contains.Substring("500 Internal Server Error")
+        );
     }
 }
