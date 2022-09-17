@@ -1,0 +1,5 @@
+[*.cs]
+
+# the only reason to disable this rule is TDD since we need empty methods
+# to be able to compile the code
+dotnet_diagnostic.CA1822.severity = none
