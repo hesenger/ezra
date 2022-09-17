@@ -24,7 +24,6 @@ public class RequestParser
     }
 
     public string? Method { get; private set; }
-    public string? HttpVersion { get; private set; }
 
     public void Parse()
     {
@@ -35,16 +34,6 @@ public class RequestParser
         );
         string[] startLineParts = ParseStartLine(reader);
         ParseMethod(startLineParts);
-        ParseHttpVersion(startLineParts);
-    }
-
-    private void ParseHttpVersion(string[] startLineParts)
-    {
-        HttpVersion = startLineParts[2];
-        if (HttpVersion != "HTTP/1.1")
-        {
-            throw new ArgumentException("Invalid HTTP version");
-        }
     }
 
     private void ParseMethod(string[] startLineParts)
