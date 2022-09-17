@@ -43,39 +43,3 @@ public class RequestProcessor
         _handlers.Add(path, handler);
     }
 }
-
-public class HttpException : Exception
-{
-    public HttpException(int code, string reason, string message)
-        : base(message)
-    {
-        Code = code;
-        Reason = reason;
-    }
-
-    public int Code { get; }
-    public string Reason { get; }
-}
-
-public class Request : IRequest
-{
-    public Request(string method, string path)
-    {
-        Method = method;
-        Path = path;
-    }
-
-    public string Method { get; }
-    public string Path { get; }
-}
-
-public interface IRequest
-{
-    string Method { get; }
-    string Path { get; }
-}
-
-public interface IRequestHandler
-{
-    public void Handle(IRequest request, Stream response);
-}
