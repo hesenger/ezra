@@ -44,8 +44,8 @@ public class RequestProcessorTests
         var request = CreateStream($"{method} / HTTP/1.1");
 
         var response = new MemoryStream();
-        var handler = new RequestHandler();
-        handler.HandleRequest(request, response);
+        var handler = new RequestProcessor();
+        handler.Process(request, response);
 
         response.Position = 0;
         var reader = new StreamReader(response);

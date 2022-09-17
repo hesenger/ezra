@@ -15,8 +15,8 @@ public class RequestProcessor
 
         try
         {
-            var request = new RequestParser(content);
-            request.Parse();
+            var request = new RequestParser();
+            request.Parse(content);
             writer.WriteLine("HTTP/1.1 200 OK");
         }
         catch

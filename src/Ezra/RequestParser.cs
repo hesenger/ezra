@@ -16,19 +16,12 @@ public class RequestParser
         "TRACE",
     };
 
-    private readonly Stream _content;
-
-    public RequestParser(Stream content)
-    {
-        _content = content;
-    }
-
     public string? Method { get; private set; }
 
-    public void Parse()
+    public void Parse(Stream content)
     {
         using var reader = new StreamReader(
-            _content,
+            content,
             encoding: Encoding.UTF8,
             leaveOpen: true
         );
