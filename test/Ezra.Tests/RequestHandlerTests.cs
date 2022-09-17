@@ -77,4 +77,19 @@ public class RequestHandlerTests
         var responseText = reader.ReadToEnd();
         Assert.That(responseText, Contains.Substring(expectedResponse));
     }
+
+    [Test]
+    public void ShouldReturn400UnsupportedHttp()
+    {
+        var request = CreateStream("GET / HTTP/1.2");
+
+        var response = new MemoryStream();
+        var handler = new RequestHandler();
+        handler.HandleRequest(request, response);
+
+        response.Position = 0;
+        var reader = new StreamReader(response);
+        var responseText = reader.ReadToEnd();
+        Assert.AreEqual("HTTP/1.1 400 Bad Request\r\n", responseText);
+    }
 }
