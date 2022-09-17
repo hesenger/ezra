@@ -52,7 +52,7 @@ public class RequestParser
 
     public void Parse()
     {
-        using var reader = new StreamReader(_content);
+        using var reader = new StreamReader(_content, leaveOpen: true);
         var startLine = reader.ReadLine();
         var startLineParts = startLine!.Split(' ');
         if (startLineParts.Length != 3)

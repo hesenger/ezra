@@ -5,7 +5,26 @@
       "label": "build",
       "command": "dotnet",
       "type": "process",
-      "args": ["build", "${workspaceFolder}"],
+      "args": [
+        "build",
+        "${workspaceFolder}/test/Ezra.Tests/Ezra.Tests.csproj",
+        "/property:GenerateFullPaths=true",
+        "/consoleloggerparameters:NoSummary"
+      ],
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "run",
+      "command": "dotnet",
+      "type": "process",
+      "args": ["run", "${workspaceFolder}/test/Ezra.Console"],
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "watch",
+      "command": "dotnet",
+      "type": "process",
+      "args": ["watch", "run", "${workspaceFolder}/test/Ezra.Console"],
       "problemMatcher": "$msCompile"
     }
   ]
