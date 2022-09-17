@@ -1,10 +1,15 @@
 using System.Text;
 
-namespace Ezra;
+namespace Ezra.Processing;
 
 public class RequestProcessor
 {
-    private readonly Dictionary<string, IRequestHandler> _handlers = new();
+    private readonly Dictionary<string, IRequestHandler> _handlers;
+
+    public RequestProcessor(Dictionary<string, IRequestHandler> handlers)
+    {
+        _handlers = handlers;
+    }
 
     public void Process(Stream content, Stream responseStream)
     {
@@ -39,10 +44,5 @@ public class RequestProcessor
         return _handlers.TryGetValue(request.Path, out var handler)
             ? handler
             : throw new HttpException(404, "Not Found", "No handler for path");
-    }
-
-    public void MapHandler(string path, IRequestHandler handler)
-    {
-        _handlers.Add(path, handler);
     }
 }

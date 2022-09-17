@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace Ezra;
+namespace Ezra.Processing;
 
 public class RequestParser
 {

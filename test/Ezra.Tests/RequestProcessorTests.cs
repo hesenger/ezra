@@ -1,6 +1,6 @@
 using System;
 using System.IO;
-using System.Linq;
+using Ezra.Processing;
 using Moq;
 using NUnit.Framework;
 
@@ -36,7 +36,7 @@ public class RequestProcessorTests
         var request = CreateStream($"{method} / HTTP/1.1");
 
         var response = new MemoryStream();
-        var processor = new RequestProcessor();
+        var processor = new RequestProcessor(new());
         processor.Process(request, response);
 
         response.Position = 0;
@@ -48,11 +48,6 @@ public class RequestProcessorTests
     [Test]
     public void ShouldDelegateRequestMappedHandler()
     {
-        var request = CreateStream($"GET /test HTTP/1.1");
-
-        var response = new MemoryStream();
-        var processor = new RequestProcessor();
-
         var handlerSpy = new Mock<IRequestHandler>();
         handlerSpy
             .Setup(h => h.Handle(It.IsAny<IRequest>(), It.IsAny<IResponse>()))
@@ -65,7 +60,11 @@ public class RequestProcessorTests
                 }
             );
 
-        processor.MapHandler("/test", handlerSpy.Object);
+        var request = CreateStream($"GET /test HTTP/1.1");
+        var response = new MemoryStream();
+        var processor = new RequestProcessor(
+            new() { { "/test", handlerSpy.Object } }
+        );
         processor.Process(request, response);
 
         handlerSpy.Verify(
@@ -84,11 +83,6 @@ public class RequestProcessorTests
     [Test]
     public void ShouldCatchErrorFromHandler()
     {
-        var request = CreateStream($"GET /test HTTP/1.1");
-
-        var response = new MemoryStream();
-        var processor = new RequestProcessor();
-
         var handlerSpy = new Mock<IRequestHandler>();
         handlerSpy
             .Setup(h => h.Handle(It.IsAny<IRequest>(), It.IsAny<IResponse>()))
@@ -97,7 +91,11 @@ public class RequestProcessorTests
                     throw new InvalidOperationException("Something went wrong")
             );
 
-        processor.MapHandler("/test", handlerSpy.Object);
+        var request = CreateStream($"GET /test HTTP/1.1");
+        var response = new MemoryStream();
+        var processor = new RequestProcessor(
+            new() { { "/test", handlerSpy.Object } }
+        );
         processor.Process(request, response);
 
         handlerSpy.Verify(

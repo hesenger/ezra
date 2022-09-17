@@ -1,4 +1,4 @@
-namespace Ezra;
+namespace Ezra.Processing;
 
 public class Request : IRequest
 {
