@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using Moq;
 using NUnit.Framework;
 
@@ -30,10 +31,7 @@ public class RequestProcessorTests
 
     [Test]
     [TestCaseSource(nameof(MethodCases))]
-    public void ShouldReturn200ValidMethodsOnly(
-        string method,
-        string expectedResponse
-    )
+    public void ShouldValidateMethod(string method, string expectedResponse)
     {
         var request = CreateStream($"{method} / HTTP/1.1");
 

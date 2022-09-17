@@ -51,5 +51,11 @@ public class HelloHandler : IRequestHandler
     {
         System.Console.WriteLine($"{request.Method} {request.Path}");
         response.Write("Hello World!");
+        response.Write(
+            string.Join(
+                "; ",
+                request.Headers.Select(h => $"{h.Key}: {h.Value}")
+            )
+        );
     }
 }

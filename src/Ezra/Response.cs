@@ -19,6 +19,5 @@ public class Response : IResponse
         writer.WriteLine($"HTTP/1.1 {Code} {Reason}");
         writer.WriteLine();
         writer.WriteLine(_content.ToString());
-        writer.WriteLine();
     }
 }
