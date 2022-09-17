@@ -28,12 +28,26 @@ public class RequestHandler
 
 public class RequestParser
 {
+    public static readonly string[] ValidMethods = new string[]
+    {
+        "GET",
+        "HEAD",
+        "POST",
+        "PUT",
+        "DELETE",
+        "CONNECT",
+        "OPTIONS",
+        "TRACE",
+    };
+
     private readonly Stream _content;
 
     public RequestParser(Stream content)
     {
         _content = content;
     }
+
+    public string? Method { get; private set; }
 
     public void Parse()
     {
@@ -43,6 +57,12 @@ public class RequestParser
         if (startLineParts.Length != 3)
         {
             throw new ArgumentException("Invalid request");
+        }
+
+        Method = startLineParts[0];
+        if (!ValidMethods.Contains(Method))
+        {
+            throw new ArgumentException("Invalid method");
         }
     }
 }

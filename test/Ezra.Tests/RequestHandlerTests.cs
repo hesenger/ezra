@@ -45,27 +45,22 @@ public class RequestHandlerTests
         Assert.AreEqual("HTTP/1.1 400 Bad Request\r\n", responseText);
     }
 
-    public static readonly string[] ValidMethods = new string[]
+    public static readonly string[][] GetMethodCases = new[]
     {
-        "GET",
-        "HEAD",
-        "POST",
-        "PUT",
-        "DELETE",
-        "CONNECT",
-        "OPTIONS",
-        "TRACE",
-    };
-
-    public static readonly string[] InvalidMethods = new string[]
-    {
-        "LOL",
-        "4HEAD"
+        new[] { "GET", "200 OK" },
+        new[] { "HEAD", "200 OK" },
+        new[] { "POST", "200 OK" },
+        new[] { "PUT", "200 OK" },
+        new[] { "DELETE", "200 OK" },
+        new[] { "CONNECT", "200 OK" },
+        new[] { "OPTIONS", "200 OK" },
+        new[] { "TRACE", "200 OK" },
+        new[] { "LOL", "400 Bad Request" },
+        new[] { "4HEAD", "400 Bad Request" },
     };
 
     [Test]
-    [TestCase(nameof(ValidMethods), "200 OK")]
-    [TestCase(nameof(InvalidMethods), "400 Bad Request")]
+    [TestCaseSource(nameof(GetMethodCases))]
     public void ShouldReturn200ValidMethodsOnly(
         string method,
         string expectedResponse
