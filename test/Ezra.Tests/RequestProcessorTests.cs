@@ -52,4 +52,37 @@ public class RequestProcessorTests
         var responseText = reader.ReadLine();
         Assert.That(responseText, Contains.Substring(expectedResponse));
     }
+
+    [Test]
+    public void ShouldDelegateRequestMappedHandler()
+    {
+        var request = CreateStream($"GET /test HTTP/1.1");
+
+        var response = new MemoryStream();
+        var handler = new RequestProcessor();
+        handler.MapHandler("/test", new TestHandler("There we go!"));
+        handler.Process(request, response);
+
+        response.Position = 0;
+        var reader = new StreamReader(response);
+        var statusLine = reader.ReadLine();
+        var body = reader.ReadToEnd();
+        Assert.That(statusLine, Contains.Substring("200 OK"));
+        Assert.That(body, Contains.Substring("There we go!"));
+    }
+}
+
+public class TestHandler : IRequestHandler
+{
+    private readonly string _response;
+
+    public TestHandler(string response)
+    {
+        _response = response;
+    }
+
+    public void Handle(IRequest request, IResponse response)
+    {
+        response.Write(_response);
+    }
 }

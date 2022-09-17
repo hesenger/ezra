@@ -24,4 +24,23 @@ public class RequestProcessor
             writer.WriteLine("HTTP/1.1 400 Bad Request");
         }
     }
+
+    public void MapHandler(string path, IRequestHandler handler) { }
+}
+
+public interface IRequest
+{
+    string Method { get; }
+    string Path { get; }
+    IDictionary<string, string> Headers { get; }
+}
+
+public interface IResponse
+{
+    void Write(string content);
+}
+
+public interface IRequestHandler
+{
+    public void Handle(IRequest request, IResponse response);
 }
