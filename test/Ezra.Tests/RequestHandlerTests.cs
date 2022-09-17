@@ -5,11 +5,16 @@ namespace Ezra.Tests;
 
 public class RequestHandlerTests
 {
-    private static Stream CreateStream(string content)
+    private static Stream CreateStream(params string[] content)
     {
         var stream = new MemoryStream();
-        var writer = new StreamWriter(stream);
-        writer.Write(content);
+        var writer = new StreamWriter(stream) { NewLine = "\r\n" };
+
+        foreach (var line in content)
+        {
+            writer.WriteLine(line);
+        }
+
         writer.Flush();
         stream.Position = 0;
         return stream;
