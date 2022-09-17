@@ -21,14 +21,14 @@ public class RequestProcessorTests
         return stream;
     }
 
-    public static readonly string[][] GetMethodCases = new[]
+    public static readonly string[][] MethodCases = new[]
     {
         new[] { "GET", "404 Not Found" },
         new[] { "INVALID-METHOD", "400 Bad Request" },
     };
 
     [Test]
-    [TestCaseSource(nameof(GetMethodCases))]
+    [TestCaseSource(nameof(MethodCases))]
     public void ShouldReturn200ValidMethodsOnly(
         string method,
         string expectedResponse
@@ -55,12 +55,30 @@ public class RequestProcessorTests
         var processor = new RequestProcessor();
 
         var handlerSpy = new Mock<IRequestHandler>();
+        handlerSpy
+            .Setup(h => h.Handle(It.IsAny<IRequest>(), It.IsAny<IResponse>()))
+            .Callback<IRequest, IResponse>(
+                (request, response) =>
+                {
+                    response.Code = 200;
+                    response.Reason = "OK";
+                    response.Write("Hello World");
+                }
+            );
+
         processor.MapHandler("/test", handlerSpy.Object);
         processor.Process(request, response);
 
         handlerSpy.Verify(
-            h => h.Handle(It.IsAny<IRequest>(), It.IsAny<Stream>()),
+            h => h.Handle(It.IsAny<IRequest>(), It.IsAny<IResponse>()),
             Times.Once
         );
+
+        response.Position = 0;
+        var reader = new StreamReader(response);
+        var responseText = reader.ReadLine();
+        var body = reader.ReadLine();
+        Assert.That(responseText, Contains.Substring("200 OK"));
+        Assert.That(body, Is.EqualTo("Hello World"));
     }
 }

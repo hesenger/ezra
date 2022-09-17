@@ -19,7 +19,7 @@ public class RequestProcessor
         {
             var request = new RequestParser().Parse(content);
             var handler = GetHandlerFor(request);
-            handler.Handle(request, new MemoryStream());
+            handler.Handle(request, new Response(response));
         }
         catch (HttpException ex)
         {

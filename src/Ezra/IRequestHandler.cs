@@ -2,5 +2,5 @@ namespace Ezra;
 
 public interface IRequestHandler
 {
-    public void Handle(IRequest request, Stream response);
+    public void Handle(IRequest request, IResponse response);
 }
