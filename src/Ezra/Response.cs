@@ -6,10 +6,8 @@ public class Response : IResponse
 {
     private readonly StringBuilder _content = new();
 
-    public Response() { }
-
-    public int Code { get; set; }
-    public string? Reason { get; set; }
+    public int Code { get; set; } = 200;
+    public string? Reason { get; set; } = "OK";
 
     public void Write(string content)
     {
@@ -21,5 +19,6 @@ public class Response : IResponse
         writer.WriteLine($"HTTP/1.1 {Code} {Reason}");
         writer.WriteLine();
         writer.WriteLine(_content.ToString());
+        writer.WriteLine();
     }
 }
