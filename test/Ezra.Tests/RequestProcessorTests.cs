@@ -77,8 +77,8 @@ public class RequestProcessorTests
         response.Position = 0;
         var reader = new StreamReader(response);
         var responseText = reader.ReadLine();
-        var body = reader.ReadLine();
+        var body = reader.ReadToEnd();
         Assert.That(responseText, Contains.Substring("200 OK"));
-        Assert.That(body, Is.EqualTo("Hello World"));
+        Assert.That(body.Trim(), Is.EqualTo("Hello World"));
     }
 }

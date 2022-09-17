@@ -6,10 +6,10 @@ public class RequestProcessor
 {
     private readonly Dictionary<string, IRequestHandler> _handlers = new();
 
-    public void Process(Stream content, Stream response)
+    public void Process(Stream content, Stream responseStream)
     {
         using var writer = new StreamWriter(
-            stream: response,
+            stream: responseStream,
             encoding: Encoding.UTF8,
             leaveOpen: true
         );
@@ -18,8 +18,11 @@ public class RequestProcessor
         try
         {
             var request = new RequestParser().Parse(content);
-            var handler = GetHandlerFor(request);
-            handler.Handle(request, new Response(response));
+            var handler = GetHandler(request);
+
+            var response = new Response();
+            handler.Handle(request, response);
+            response.Serialize(writer);
         }
         catch (HttpException ex)
         {
@@ -31,7 +34,7 @@ public class RequestProcessor
         }
     }
 
-    private IRequestHandler GetHandlerFor(IRequest request)
+    private IRequestHandler GetHandler(IRequest request)
     {
         return _handlers.TryGetValue(request.Path, out var handler)
             ? handler
