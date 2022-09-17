@@ -44,4 +44,42 @@ public class RequestHandlerTests
         var responseText = reader.ReadToEnd();
         Assert.AreEqual("HTTP/1.1 400 Bad Request\r\n", responseText);
     }
+
+    public static readonly string[] ValidMethods = new string[]
+    {
+        "GET",
+        "HEAD",
+        "POST",
+        "PUT",
+        "DELETE",
+        "CONNECT",
+        "OPTIONS",
+        "TRACE",
+    };
+
+    public static readonly string[] InvalidMethods = new string[]
+    {
+        "LOL",
+        "4HEAD"
+    };
+
+    [Test]
+    [TestCase(nameof(ValidMethods), "200 OK")]
+    [TestCase(nameof(InvalidMethods), "400 Bad Request")]
+    public void ShouldReturn200ValidMethodsOnly(
+        string method,
+        string expectedResponse
+    )
+    {
+        var request = CreateStream($"{method} / HTTP/1.1");
+
+        var response = new MemoryStream();
+        var handler = new RequestHandler();
+        handler.HandleRequest(request, response);
+
+        response.Position = 0;
+        var reader = new StreamReader(response);
+        var responseText = reader.ReadToEnd();
+        Assert.That(responseText, Contains.Substring(expectedResponse));
+    }
 }
