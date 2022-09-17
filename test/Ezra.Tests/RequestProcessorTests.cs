@@ -1,4 +1,5 @@
 using System.IO;
+using Moq;
 using NUnit.Framework;
 
 namespace Ezra.Tests;
@@ -22,16 +23,8 @@ public class RequestProcessorTests
 
     public static readonly string[][] GetMethodCases = new[]
     {
-        new[] { "GET", "200 OK" },
-        new[] { "HEAD", "200 OK" },
-        new[] { "POST", "200 OK" },
-        new[] { "PUT", "200 OK" },
-        new[] { "DELETE", "200 OK" },
-        new[] { "CONNECT", "200 OK" },
-        new[] { "OPTIONS", "200 OK" },
-        new[] { "TRACE", "200 OK" },
-        new[] { "LOL", "400 Bad Request" },
-        new[] { "4HEAD", "400 Bad Request" },
+        new[] { "GET", "404 Not Found" },
+        new[] { "INVALID-METHOD", "400 Bad Request" },
     };
 
     [Test]
@@ -44,8 +37,8 @@ public class RequestProcessorTests
         var request = CreateStream($"{method} / HTTP/1.1");
 
         var response = new MemoryStream();
-        var handler = new RequestProcessor();
-        handler.Process(request, response);
+        var processor = new RequestProcessor();
+        processor.Process(request, response);
 
         response.Position = 0;
         var reader = new StreamReader(response);
@@ -59,30 +52,15 @@ public class RequestProcessorTests
         var request = CreateStream($"GET /test HTTP/1.1");
 
         var response = new MemoryStream();
-        var handler = new RequestProcessor();
-        handler.MapHandler("/test", new TestHandler("There we go!"));
-        handler.Process(request, response);
+        var processor = new RequestProcessor();
 
-        response.Position = 0;
-        var reader = new StreamReader(response);
-        var statusLine = reader.ReadLine();
-        var body = reader.ReadToEnd();
-        Assert.That(statusLine, Contains.Substring("200 OK"));
-        Assert.That(body, Contains.Substring("There we go!"));
-    }
-}
+        var handlerSpy = new Mock<IRequestHandler>();
+        processor.MapHandler("/test", handlerSpy.Object);
+        processor.Process(request, response);
 
-public class TestHandler : IRequestHandler
-{
-    private readonly string _response;
-
-    public TestHandler(string response)
-    {
-        _response = response;
-    }
-
-    public void Handle(IRequest request, IResponse response)
-    {
-        response.Write(_response);
+        handlerSpy.Verify(
+            h => h.Handle(It.IsAny<IRequest>(), It.IsAny<Stream>()),
+            Times.Once
+        );
     }
 }

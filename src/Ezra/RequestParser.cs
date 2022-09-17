@@ -16,9 +16,7 @@ public class RequestParser
         "TRACE",
     };
 
-    public string? Method { get; private set; }
-
-    public void Parse(Stream content)
+    public IRequest Parse(Stream content)
     {
         using var reader = new StreamReader(
             content,
@@ -26,27 +24,30 @@ public class RequestParser
             leaveOpen: true
         );
         string[] startLineParts = ParseStartLine(reader);
-        ParseMethod(startLineParts);
+        var method = ParseMethod(startLineParts);
+        var path = ParsePath(startLineParts);
+        return new Request(method, path);
     }
 
-    private void ParseMethod(string[] startLineParts)
+    private string ParsePath(string[] startLineParts)
     {
-        Method = startLineParts[0];
-        if (!ValidMethods.Contains(Method))
-        {
-            throw new ArgumentException("Invalid method");
-        }
+        return startLineParts[1];
+    }
+
+    private string ParseMethod(string[] startLineParts)
+    {
+        var method = startLineParts[0];
+        return ValidMethods.Contains(method)
+            ? method
+            : throw new HttpException(400, "Bad Request", "Invalid method");
     }
 
     private string[] ParseStartLine(StreamReader reader)
     {
         var startLine = reader.ReadLine();
         var startLineParts = startLine!.Split(' ');
-        if (startLineParts.Length != 3)
-        {
-            throw new ArgumentException("Invalid request");
-        }
-
-        return startLineParts;
+        return startLineParts.Length == 3
+            ? startLineParts
+            : throw new HttpException(400, "Bad Request", "Invalid start line");
     }
 }
