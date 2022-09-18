@@ -1,7 +1,7 @@
 # Ezra
 
-Ezra is a HTTP web server build based on orinal protocol specification,
-using TDD from the scratch. It was built completely using managed C# code.
+Ezra is a HTTP web server built based over the orinal protocol specification
+using TDD since the very beggining.
 
 Ezra is a fully recreational project made for learning and not intended
 to be used in production.
